@@ -33,6 +33,7 @@ export default function ProfilePicture({ imageURL }: Props) {
         if (uploadProgress === 100) setUploadProgress(0);
     }, [uploadProgress]);
 
+    // rerender once the preview state changes
     useEffect(() => {}, [preview]);
 
     const handleChange = (e: FormEvent) => {
@@ -149,7 +150,9 @@ function ProgressModal({ percent }: { percent: number }) {
                     strokeColor="#00FF00"
                 />
                 <span>Uploading...</span>
-                <span className="text-center block">{Math.round(percent)}%</span>
+                <span className="text-center block">
+                    {Math.round(percent)}%
+                </span>
             </div>
         </div>
     );

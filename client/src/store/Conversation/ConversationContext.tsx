@@ -12,7 +12,8 @@ type Action =
     | { type: 'SET_CONVERSATION'; payload: any }
     | { type: 'CREATE_CONVERSATION_PENDING' }
     | { type: 'CREATE_CONVERSATION_SUCCESS'; payload: any }
-    | { type: 'SET_LASTMESSAGE'; payload: any };
+    | { type: 'SET_LASTMESSAGE'; payload: any }
+    | { type: 'RESET' };
 
 export type Dispatch = (action: Action) => void;
 
@@ -102,6 +103,8 @@ function reducer(state: State, action: Action) {
             };
         case 'SET_LASTMESSAGE':
             return { ...state, lastMessage: action.payload };
+        case 'RESET':
+            return initialState;
     }
 }
 
@@ -141,7 +144,9 @@ type ConversationProviderProps = { children: ReactNode };
 export function Provider({ children }: ConversationProviderProps) {
     const [state, dispatch] = useReducer(reducer, initialState);
 
-    const value = { state, dispatch };
+    const reset = () => dispatch({ type: 'RESET' });
+
+    const value = { state, dispatch, reset };
     return (
         <ConversationContext.Provider value={value}>
             {children}
@@ -153,5 +158,6 @@ export function useConversation() {
     return useContext(ConversationContext) as {
         state: State;
         dispatch: Dispatch;
+        reset: () => void;
     };
 }

@@ -55,9 +55,6 @@ function reducer(state: State, action: Action) {
             return {
                 ...state,
                 isLoading: false,
-                isAuthenticated: true,
-                user: action.payload,
-                message: null,
             };
         }
         case 'REGISTER_FAILED': {
@@ -89,9 +86,6 @@ function reducer(state: State, action: Action) {
         case 'GETME_SUCCESS': {
             return { ...state, isLoading: false, user: action.payload };
         }
-        // default: {
-        //     throw new Error(`Unhandled action type: ${action.type}`);
-        // }
     }
 }
 

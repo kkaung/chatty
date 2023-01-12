@@ -18,7 +18,6 @@ export default function ConversationList() {
 
     useEffect(() => {
         connection.on('ReceiveMessage', data => {
-            console.log('received...');
             dispatch({ type: 'UPDATE_CONVERSATIONS_SUCCESS', payload: data });
         });
     }, [dispatch]);

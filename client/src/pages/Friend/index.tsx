@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import Form from '../../components/form';
 import { api } from '../../utilities';
 
 export default function FriendPage() {
@@ -45,7 +46,10 @@ export default function FriendPage() {
                             alt="profile"
                         />
                         <div className="text-xl my-2">@{username}</div>
-                        <div className="">{email}</div>
+                        <div className="mb-2">{email}</div>
+                        <Link to="/">
+                            <Form.Button title="Back" isLoading={false} />
+                        </Link>
                     </header>
                 )}
             </div>

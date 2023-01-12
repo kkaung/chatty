@@ -70,7 +70,7 @@ export default function ChatTextInput({ cid }: Props) {
                 <input
                     type="text"
                     placeholder="Type something..."
-                    className="flex-1 outline-none"
+                    className="flex-1 outline-none text-black/80"
                     onChange={e => setMessage(e.target.value)}
                     value={message}
                 />

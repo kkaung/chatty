@@ -4,18 +4,22 @@ import { useAuth } from '../../store/Auth/AuthContext';
 import { Link } from 'react-router-dom';
 import { useUser } from '../../store/User/UserContext';
 import ProfilePicture from './ProfilePicture';
+import { useConversation } from '../../store/Conversation/ConversationContext';
 
 export default function ProfilePage() {
     const { dispatch } = useAuth();
-
     const {
         state: { user },
+        reset,
     } = useUser();
+    const con = useConversation();
 
     const { imageURL, username, email } = user!;
 
     const handleClick = () => {
         logoutUser(dispatch);
+        reset();
+        con.reset();
     };
 
     return (

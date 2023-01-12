@@ -13,8 +13,8 @@ export default function SubmitButton({
     return (
         <button
             className={`${className} ${
-                isLoading ? 'bg-cyan-700' : 'bg-cyan-500'
-            } px-4 py-2 rounded-md text-white hover:bg-cyan-700`}
+                isLoading ? 'bg-cyan-700' : 'bg-cyan-400'
+            } px-4 py-2 rounded-md text-white hover:bg-cyan-500`}
             {...props}
         >
             {isLoading ? 'Loading...' : title}

@@ -3,29 +3,24 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import Form from '../../components/form';
-import { ErrorMessage } from '../../components/message';
 import { registerUser } from '../../store/Auth/AuthActions';
 import { useAuth } from '../../store/Auth/AuthContext';
 import { RegisterUser } from '../../types';
 
 export default function RegisterPage() {
+    const [submitted, setSubmitted] = useState(false);
     const [{ username, email, password }, setForm] = useState<RegisterUser>({
-        username: 'test1',
-        password: 'test1',
-        email: 'test1@gmail.com',
+        username: '',
+        password: '',
+        email: '',
     });
 
     const navigate = useNavigate();
 
     const {
-        state: { isLoading, message, isAuthenticated },
+        state: { isLoading, message },
         dispatch,
     } = useAuth();
-
-    useEffect(() => {
-        if (!isAuthenticated) return;
-        navigate('/');
-    }, [isAuthenticated, navigate]);
 
     const handleChange = (e: FormEvent<HTMLInputElement>) => {
         const target = e.target as HTMLInputElement;
@@ -34,14 +29,19 @@ export default function RegisterPage() {
         });
     };
 
+    useEffect(() => {
+        if (!message && submitted && !isLoading) navigate('/login');
+    }, [submitted, message, isLoading, navigate]);
+
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         registerUser(dispatch, { username, email, password });
+
+        setSubmitted(true);
     };
 
     return (
         <>
-            {message && <ErrorMessage message={message} />}
             <div className="flex justify-center items-center w-full h-full">
                 <form
                     className=" bg-white px-6 py-4 rounded-xl shadow-sm max-w-[420px] sm:w-[360px]"
@@ -87,7 +87,7 @@ export default function RegisterPage() {
                         Have an account ?{' '}
                         <Link
                             to="/login"
-                            className=" text-cyan-500 hover:text-cyan-700 hover:underline"
+                            className=" text-cyan-400 hover:text-cyan-500 hover:underline"
                         >
                             Login
                         </Link>

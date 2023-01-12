@@ -4,7 +4,7 @@ export default function SearchSpinner() {
     return (
         <svg
             aria-hidden="true"
-            className="w-5 h-5  text-gray-200 animate-spin  fill-cyan-600"
+            className="w-5 h-5  text-gray-200 animate-spin  fill-cyan-500"
             viewBox="0 0 100 101"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"

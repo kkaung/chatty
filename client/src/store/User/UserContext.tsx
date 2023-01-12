@@ -16,7 +16,8 @@ type Action =
     | { type: 'GETME_SUCCESS'; payload: any }
     | { type: 'RESET' }
     | { type: 'UPDATE_PENDING' }
-    | { type: 'UPDATE_SUCCESS'; payload: any };
+    | { type: 'UPDATE_SUCCESS'; payload: any }
+    | { type: 'SET_SEARCHLIST_EMPTY' };
 
 type State = {
     isSearching: boolean;
@@ -56,27 +57,28 @@ function reducer(state: State, action: Action) {
                 isSearching: false,
             };
         }
-        case 'ADDFRIEND_PENDING': {
+        case 'ADDFRIEND_PENDING':
             return { ...state };
-        }
-        case 'ADDFRIEND_SUCCESS': {
+
+        case 'ADDFRIEND_SUCCESS':
             return { ...state, isLoading: false, user: action.payload };
-        }
-        case 'GETME_PENDING': {
+        case 'GETME_PENDING':
             return { ...state, isLoading: true };
-        }
-        case 'GETME_SUCCESS': {
+
+        case 'GETME_SUCCESS':
             return { ...state, isLoading: false, user: action.payload };
-        }
-        case 'RESET': {
-            return { ...state, searchList: [] };
-        }
-        case 'UPDATE_PENDING': {
+
+        case 'RESET':
+            return initialState;
+
+        case 'SET_SEARCHLIST_EMPTY':
+            return { ...state, searchList: null };
+
+        case 'UPDATE_PENDING':
             return { ...state, isLoading: true };
-        }
-        case 'UPDATE_SUCCESS': {
+
+        case 'UPDATE_SUCCESS':
             return { ...state, user: action.payload };
-        }
     }
 }
 
@@ -87,7 +89,11 @@ function Provider({ children }: UserProviderProps) {
         dispatch({ type: 'RESET' });
     };
 
-    const value = { state, dispatch, reset };
+    const setSearchListEmpty = () => {
+        dispatch({ type: 'SET_SEARCHLIST_EMPTY' });
+    };
+
+    const value = { state, dispatch, reset, setSearchListEmpty };
     return (
         <UserContext.Provider value={value}>{children}</UserContext.Provider>
     );
@@ -98,6 +104,7 @@ function useUser() {
         dispatch: Dispatch;
         state: State;
         reset: () => void;
+        setSearchListEmpty: () => void;
     };
 }
 

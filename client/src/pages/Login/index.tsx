@@ -2,18 +2,17 @@ import { FormEvent, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import Form from '../../components/form';
-import { ErrorMessage } from '../../components/message';
 import { loginUser, useAuth } from '../../store/Auth/AuthContext';
 import { LoginUser } from '../../types';
 
 export default function LoginPage() {
     const [{ email, password }, setForm] = useState<LoginUser>({
-        email: 'string@gmail.com',
-        password: 'string',
+        email: '',
+        password: '',
     });
 
     const {
-        state: { isLoading, isAuthenticated, message },
+        state: { isLoading, isAuthenticated },
         dispatch,
     } = useAuth();
 
@@ -39,7 +38,6 @@ export default function LoginPage() {
 
     return (
         <>
-            {message && <ErrorMessage message={message} />}
             <div className="flex justify-center items-center h-full w-full">
                 <form
                     className=" bg-white px-6 py-4 rounded-xl shadow-sm max-w-[420px] sm:w-[360px]"
@@ -76,7 +74,7 @@ export default function LoginPage() {
                         Don't have an account ?{' '}
                         <Link
                             to="/signup"
-                            className=" text-cyan-500 hover:text-cyan-700 hover:underline"
+                            className=" text-cyan-400 hover:text-cyan-500 hover:underline"
                         >
                             Sign up
                         </Link>

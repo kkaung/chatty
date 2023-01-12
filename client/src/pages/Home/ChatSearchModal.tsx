@@ -14,7 +14,7 @@ export default function ChatSearchModal({ setModalShow }: Props) {
     const [search, setSearch] = useState('');
     const [isSearching, setIsSearching] = useState(false);
 
-    const { dispatch, state, reset } = useUser();
+    const { dispatch, state, setSearchListEmpty } = useUser();
 
     const { searchList } = state;
 
@@ -67,7 +67,7 @@ export default function ChatSearchModal({ setModalShow }: Props) {
                             className="text-gray-500/50 text-2xl hover:text-gray-500/70"
                             onClick={() => {
                                 setModalShow(false);
-                                reset();
+                                setSearchListEmpty();
                             }}
                         />
                     </button>

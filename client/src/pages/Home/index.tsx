@@ -25,7 +25,7 @@ export default function HomePage() {
 
     return (
         <div className="flex text-white h-full shadow-sm max-w-[900px] mx-auto">
-            <div className="w-[300px] max-w-[300px] bg-cyan-500/80 rounded-bl-md rounded-tl-md">
+            <div className=" max-w-[300px] w-full bg-cyan-500/80 rounded-bl-md rounded-tl-md sm:max-w-[300px]">
                 <ChatProfileHead
                     username={user?.username}
                     imageURL={user?.imageURL}
