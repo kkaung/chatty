@@ -1,0 +1,19 @@
+FROM node:alpine AS builder
+
+WORKDIR /app
+COPY package.json ./
+RUN yarn install 
+
+COPY . .
+RUN yarn build
+
+FROM nginx:1.23.3-alpine AS runner
+
+ENV NODE_ENV=production
+ENV PORT 3000
+
+COPY --from=builder /app/build /usr/share/nginx/html
+
+EXPOSE 3000
+
+ENTRYPOINT ["nginx", "-g", "daemon off;"]

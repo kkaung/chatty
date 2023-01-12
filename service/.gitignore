@@ -1,0 +1,24 @@
+# Ignore NuGet package directories
+**/packages/
+
+# Ignore Visual Studio temporary files
+**/obj/
+
+# Ignore Visual Studio cache files
+**/bin/
+**/Debug/
+**/Release/
+**/*.user
+**/*.vspscc
+**/*.vssscc
+
+# Ignore Visual Studio log files
+**/*.log
+**/*.sdf
+
+# Ignore Visual Studio database files
+**/*.mdf
+**/*.ldf
+
+# Ignore Visual Studio project lock files
+**/*.csproj.lock.json

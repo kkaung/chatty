@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+    client:
+        build: 
+          context: ./client
+          dockerfile: Dockerfile.prod
+        ports:
+            - 80:3000
+        environment:
+            ENV: development
+            PORT: 3000
+            API_URL: 'http://localhost:5141/api'
+        restart: unless-stopped
+    api:
+        build: './service'
+        ports:
+            - 5141:5141
+        environment:
+            PORT: 5141
+            ASPNETCORE_URLS: http://+:5141
+            ASPNETCORE_HTTP_PROT: https://+:5141
+        restart: unless-stopped
