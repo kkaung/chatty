@@ -42,7 +42,7 @@ builder.Services.AddCors(options =>
         builder =>
         {
             builder
-                .WithOrigins("http://localhost:3000", "http://0.0.0.0:3000")
+                .WithOrigins("http://localhost:3000", "http://0.0.0.0:3000", "https://chatty-pi.vercel.app")
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();
