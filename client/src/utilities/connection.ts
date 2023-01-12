@@ -1,7 +1,7 @@
 import * as signalR from '@microsoft/signalr';
 
 export const connection = new signalR.HubConnectionBuilder()
-    .withUrl('http://localhost:5141/hub')
+    .withUrl(process.env.REACT_APP_HUB_URL!)
     .build();
 
 export const joinConversation = async (cid: string) => {
@@ -18,10 +18,4 @@ export const joinConversation = async (cid: string) => {
 export const leaveConversation = async (cid: string) => {
     await connection.invoke('leaveConversation', cid);
     if (connection.state === 'Connected') await connection.stop();
-};
-
-export const receiveMessage = () => {
-    // connection.on('ReceiveMessage', data => {
-    //     console.log(data);
-    // });
 };

@@ -4,7 +4,6 @@ using Chatty.Hubs;
 using Chatty.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using OpenAI.GPT3.Managers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,6 +59,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.UseHttpsRedirection();
 
