@@ -40,7 +40,7 @@ public class UserService : IUserService
         List<User> users;
 
         if (q != "")
-            users = await _usersCollection.Find(u => u.Username.Contains(q)).ToListAsync();
+            users = await _usersCollection.Find(u => u.Username.ToLower().Contains(q.ToLower())).ToListAsync();
         else
             users = await _usersCollection.AsQueryable().ToListAsync();
 
