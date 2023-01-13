@@ -50,8 +50,23 @@ public class ConversationService : IConversationService
 
         var uid = GetUserId();
 
-        if(uid == createConversation.fid)
+        if (uid == createConversation.fid)
         {
+            response.Success = false;
+            return response;
+        }
+
+        var conversationExists = await _conversationsCollection
+            .Find(
+                c =>
+                    c.SenderOne!.Id == createConversation.fid
+                    || c.SenderTwo!.Id == createConversation.fid
+            )
+            .FirstOrDefaultAsync();
+
+        if (conversationExists is not null)
+        {
+            response.Message = "Conversation already exists";
             response.Success = false;
             return response;
         }

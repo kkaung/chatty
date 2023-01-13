@@ -62,7 +62,7 @@ function reducer(state: State, action: Action) {
             return {
                 ...state,
                 creating: false,
-                conversations: [...state.conversations, action.payload],
+                conversations: [action.payload, ...state.conversations],
             };
 
         case 'UPDATE_CONVERSATIONS_SUCCESS':

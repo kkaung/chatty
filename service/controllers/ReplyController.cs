@@ -23,12 +23,9 @@ public class ReplyController : ControllerBase
     {
         var response = new ServiceResponse<string>();
 
-        var openAiService = new OpenAIService(
-            new OpenAiOptions()
-            {
-                ApiKey = _configuration.GetSection("OpenAIServiceOptions:ApiKey").Value!
-            }
-        );
+        var ApiKey = Environment.GetEnvironmentVariable("API_KEY")!;
+
+        var openAiService = new OpenAIService(new OpenAiOptions() { ApiKey = ApiKey });
 
         var completionResult = await openAiService.Completions.CreateCompletion(
             new CompletionCreateRequest()
