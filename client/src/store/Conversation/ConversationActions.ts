@@ -29,10 +29,12 @@ export async function createConversation(dispatch: Dispatch, fid: string) {
             getAxiosConfig(token)
         );
 
-        dispatch({
-            type: 'CREATE_CONVERSATION_SUCCESS',
-            payload: res.data.data,
-        });
+        if (res.data.success) {
+            dispatch({
+                type: 'CREATE_CONVERSATION_SUCCESS',
+                payload: res.data.data,
+            });
+        }
     } catch (err) {
         console.log(err);
     }

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -11,8 +12,7 @@ public class User
     public string Username { get; set; } = String.Empty;
     public string ImageURL { get; set; } = String.Empty;
     public string Email { get; set; } = String.Empty;
-    public List<Friend> Friends { get; set; } = new List<Friend>();
+    public List<string> FriendIds { get; set; } = new List<string>();
     public byte[]? PasswordSalt { get; set; }
     public byte[]? PasswordHash { get; set; }
 }
-

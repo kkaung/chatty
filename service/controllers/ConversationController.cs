@@ -49,9 +49,11 @@ public class ConversationsController : ControllerBase
     {
         var response = await _service.CreateMessage(cid, createMessage);
 
-        if (!response.Success)
-            return BadRequest();
 
+        if (!response.Success)
+            return BadRequest(response);
+
+        Console.WriteLine("Reach");
         await chatHubContext.Clients.Group(cid).SendAsync("ReceiveMessage", response.Data);
 
         return Ok();

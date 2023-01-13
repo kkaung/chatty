@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -11,6 +12,6 @@ public class Conversation
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime UpdatedAt { get; set; } = DateTime.Now;
     public List<Message> Messages { get; set; } = new List<Message>();
-    public Friend? SenderOne { get; set; }
-    public Friend? SenderTwo { get; set; }
+    public string SenderOneId { get; set; } = String.Empty;
+    public string SenderTwoId { get; set; } = String.Empty;
 }

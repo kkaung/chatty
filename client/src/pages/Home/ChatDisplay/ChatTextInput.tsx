@@ -75,13 +75,19 @@ export default function ChatTextInput({ cid }: Props) {
                     value={message}
                 />
                 <div className="flex items-center space-x-4 ">
-                    {isLoading ? (
-                        <TextSearchSpinner />
+                    {!lastMessage ? (
+                        <></>
                     ) : (
-                        <BsFillChatRightTextFill
-                            className="text-xl text-cyan-400 cursor-pointer transition hover:text-cyan-500"
-                            onClick={handleReplySuggestion}
-                        />
+                        <>
+                            {isLoading ? (
+                                <TextSearchSpinner />
+                            ) : (
+                                <BsFillChatRightTextFill
+                                    className="text-xl text-cyan-400 cursor-pointer transition hover:text-cyan-500"
+                                    onClick={handleReplySuggestion}
+                                />
+                            )}
+                        </>
                     )}
                     <button
                         type="button"

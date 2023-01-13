@@ -26,7 +26,7 @@ export default function ChatMessageList({ conversation }: Props) {
                                                 receiver?.imageURL ||
                                                 'assets/images/default-avatar.png'
                                             }
-                                            className="rounded-full min-w-[28px] h-[28px] cursor-pointer"
+                                            className="rounded-full w-[28px] h-[28px] cursor-pointer bg-cover"
                                             alt=""
                                         />
                                     </Link>
@@ -51,7 +51,7 @@ export default function ChatMessageList({ conversation }: Props) {
                                                     sender?.imageURL ||
                                                     'assets/images/default-avatar.png'
                                                 }
-                                                className="rounded-full min-w-[28px] h-[28px] cursor-pointer"
+                                                className="rounded-full w-[28px] h-[28px] cursor-pointer bg-cover"
                                                 alt=""
                                             />
                                         </Link>

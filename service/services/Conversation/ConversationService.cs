@@ -11,6 +11,7 @@ public class ConversationService : IConversationService
     private IHttpContextAccessor _httpContextAccessor;
     private IMongoCollection<Conversation> _conversationsCollection;
     private IMongoCollection<User> _usersCollection;
+    private IMongoCollection<Message> _messagesCollection;
     private IMapper _mapper;
 
     public ConversationService(
@@ -27,6 +28,9 @@ public class ConversationService : IConversationService
             chattyDatabaseSettings.Value.ConversationsCollectionName
         );
         _usersCollection = db.GetCollection<User>(chattyDatabaseSettings.Value.UsersCollectionName);
+        _messagesCollection = db.GetCollection<Message>(
+            chattyDatabaseSettings.Value.MessagesCollectionName
+        );
     }
 
     public async Task<ServiceResponse<List<GetConversationDto>>> GetUserConversations()
@@ -37,7 +41,7 @@ public class ConversationService : IConversationService
 
         var conversations = await GetConversationsByUid(uid);
 
-        response.Data = conversations.Select(c => _mapper.Map<GetConversationDto>(c)).ToList();
+        response.Data = conversations;
 
         return response;
     }
@@ -59,8 +63,8 @@ public class ConversationService : IConversationService
         var conversationExists = await _conversationsCollection
             .Find(
                 c =>
-                    c.SenderOne!.Id == createConversation.fid
-                    || c.SenderTwo!.Id == createConversation.fid
+                    c.SenderOneId == createConversation.fid
+                    || c.SenderTwoId == createConversation.fid
             )
             .FirstOrDefaultAsync();
 
@@ -74,28 +78,23 @@ public class ConversationService : IConversationService
         var friend = await FindUserById(createConversation.fid!);
         var user = await FindUserById(uid);
 
+        if (friend is null)
+        {
+            response.Message = "Friend not found";
+            response.Success = false;
+            return response;
+        }
+
         // create a new conversation
         var conversation = new Conversation();
-        conversation.SenderOne = new Friend()
-        {
-            Id = user.Id,
-            Username = user.Username,
-            Email = user.Email,
-            ImageURL = user.ImageURL
-        };
-        conversation.SenderTwo = new Friend()
-        {
-            Id = friend.Id,
-            Username = friend.Username,
-            Email = friend.Email,
-            ImageURL = friend.ImageURL
-        };
+        conversation.SenderOneId = user.Id!;
+        conversation.SenderTwoId = friend.Id!;
 
         await _conversationsCollection.InsertOneAsync(conversation);
 
         var conversations = await GetConversationsByUid(uid);
 
-        response.Data = conversations.Select(c => _mapper.Map<GetConversationDto>(c)).ToList();
+        response.Data = conversations;
 
         return response;
     }
@@ -107,6 +106,7 @@ public class ConversationService : IConversationService
     {
         var response = new ServiceResponse<GetConversationDto>();
 
+        // get sender id
         var sid = GetUserId();
 
         var conversation = await _conversationsCollection
@@ -120,13 +120,11 @@ public class ConversationService : IConversationService
             return response;
         }
 
-        var message = _mapper.Map<Message>(createMessage);
+        var newMessage = new Message() { Text = createMessage.Text, SenderId = sid };
 
-        message.SenderId = sid;
+        conversation.Messages.Add(newMessage);
 
-        conversation.Messages.Add(message);
-
-        await _conversationsCollection.ReplaceOneAsync(u => u.Id == conversation.Id, conversation);
+        await _conversationsCollection.ReplaceOneAsync(c => c.Id == conversation.Id, conversation);
 
         response.Data = _mapper.Map<GetConversationDto>(conversation);
 
@@ -143,10 +141,44 @@ public class ConversationService : IConversationService
         return _httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
     }
 
-    private async Task<List<Conversation>> GetConversationsByUid(string uid)
+    private async Task<List<GetConversationDto>> GetConversationsByUid(string uid)
     {
-        return await _conversationsCollection
-            .Find(c => c.SenderOne!.Id == uid || c.SenderTwo!.Id == uid)
+        List<GetConversationDto> result = new List<GetConversationDto> { };
+        var conversations = await _conversationsCollection
+            .Aggregate()
+            .Match(c => c.SenderOneId == uid || c.SenderTwoId == uid)
             .ToListAsync();
+
+        foreach (var c in conversations)
+        {
+            var mapConversation = _mapper.Map<GetConversationDto>(c);
+            mapConversation.SenderOne = _mapper.Map<Friend>(await FindUserById(c.SenderOneId));
+            mapConversation.SenderTwo = _mapper.Map<Friend>(await FindUserById(c.SenderTwoId));
+
+            result.Add(mapConversation);
+        }
+
+        return result;
+    }
+
+    private async Task<GetConversationDto> GetConversation(string cid)
+    {
+        var conversation = await _conversationsCollection.Find(c => c.Id == cid).FirstAsync();
+
+        var mapConversation = _mapper.Map<GetConversationDto>(conversation);
+
+        mapConversation.SenderOne = _mapper.Map<Friend>(
+            await FindUserById(conversation.SenderOneId)
+        );
+        mapConversation.SenderTwo = _mapper.Map<Friend>(
+            await FindUserById(conversation.SenderTwoId)
+        );
+
+        return mapConversation;
+    }
+
+    private async Task<Message> FindMessageById(string id)
+    {
+        return await _messagesCollection.Find(m => m.Id == id).FirstOrDefaultAsync();
     }
 }

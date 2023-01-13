@@ -10,7 +10,7 @@ namespace Chatty.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly IMongoCollection<User> _dbCollection;
+    private readonly IMongoCollection<User> _usersCollection;
     private readonly IMapper _mapper;
     private IConfiguration _configuration;
     private IHttpContextAccessor _httpContextAccessor;
@@ -25,7 +25,7 @@ public class AuthService : IAuthService
         var mongoClient = new MongoClient(chattyDatabaseSettings.Value.ConnectionString);
         var db = mongoClient.GetDatabase(chattyDatabaseSettings.Value.DatabaseName);
 
-        _dbCollection = db.GetCollection<User>(chattyDatabaseSettings.Value.UsersCollectionName);
+        _usersCollection = db.GetCollection<User>(chattyDatabaseSettings.Value.UsersCollectionName);
         _mapper = mapper;
         _configuration = configuration;
         _httpContextAccessor = httpContextAccessor;
@@ -49,7 +49,7 @@ public class AuthService : IAuthService
         newUser.PasswordSalt = passwordSalt;
         newUser.PasswordHash = passwordHash;
 
-        await _dbCollection.InsertOneAsync(newUser);
+        await _usersCollection.InsertOneAsync(newUser);
 
         response.Data = _mapper.Map<GetUserDto>(newUser);
 
@@ -60,7 +60,7 @@ public class AuthService : IAuthService
     {
         var response = new ServiceResponse<string>();
 
-        var findUser = await _dbCollection
+        var findUser = await _usersCollection
             .Find(u => u.Email == user.Email)
             .FirstOrDefaultAsync<User>();
 
@@ -88,8 +88,7 @@ public class AuthService : IAuthService
 
         var Id = _httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-
-        var user = await _dbCollection.Find(u => u.Id == Id).FirstOrDefaultAsync<User>();
+        var user = await _usersCollection.Find(u => u.Id == Id).FirstOrDefaultAsync<User>();
 
         response.Data = _mapper.Map<GetUserDto>(user);
 
@@ -107,7 +106,7 @@ public class AuthService : IAuthService
 
     private async Task<bool> UserExists(string email)
     {
-        var user = await _dbCollection.Find(u => u.Email == email).FirstOrDefaultAsync<User>();
+        var user = await _usersCollection.Find(u => u.Email == email).FirstOrDefaultAsync<User>();
         if (user is null)
             return false;
 
@@ -155,5 +154,20 @@ public class AuthService : IAuthService
         SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
 
         return tokenHandler.WriteToken(token);
+    }
+
+    private async Task<List<Friend>> FindFriends(List<string> ids)
+    {
+        List<Friend> friends = new List<Friend>() { };
+
+        foreach (var id in ids)
+        {
+            var user = await _usersCollection.Find(u => u.Id == id).FirstOrDefaultAsync();
+
+            if (user is not null)
+                friends.Add(_mapper.Map<Friend>(user));
+        }
+
+        return friends;
     }
 }

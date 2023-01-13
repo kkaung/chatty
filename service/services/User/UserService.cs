@@ -98,7 +98,7 @@ public class UserService : IUserService
             return response;
         }
 
-        var friendExists = user.Friends.FirstOrDefault(f => f.Id == id);
+        var friendExists = user.FriendIds.FirstOrDefault(fid => fid == id);
 
         if (friendExists is not null)
         {
@@ -107,11 +107,13 @@ public class UserService : IUserService
             return response;
         }
 
-        user.Friends.Add(_mapper.Map<Friend>(friend));
+        user.FriendIds.Add(id);
 
         await _usersCollection.ReplaceOneAsync(u => u.Id == GetUserId(), user);
 
         response.Data = _mapper.Map<GetUserDto>(user);
+
+        response.Data.Friends = await FindFriends(user.FriendIds);
 
         return response;
     }
@@ -138,7 +140,7 @@ public class UserService : IUserService
             return response;
         }
 
-        var friend = user.Friends.FirstOrDefault(f => f.Id == id);
+        var friend = user.FriendIds.FirstOrDefault(fid => fid == id);
 
         if (friend is null)
         {
@@ -147,10 +149,13 @@ public class UserService : IUserService
             return response;
         }
 
-        user.Friends.Remove(friend);
+        user.FriendIds = user.FriendIds.Where(fid => fid != id).ToList();
+
         await _usersCollection.ReplaceOneAsync(u => u.Id == GetUserId(), user);
 
         response.Data = _mapper.Map<GetUserDto>(user);
+
+        response.Data.Friends = await FindFriends(user.FriendIds);
 
         return response;
     }
@@ -162,7 +167,6 @@ public class UserService : IUserService
         var uid = GetUserId();
 
         var user = await FindUserById(uid);
-        var conversations = await _conversationsCollection.Find(c => c.SenderOne!.Id == uid || c.SenderTwo!.Id == uid).ToListAsync();
 
         if (update.Username != "")
             user.Username = update.Username;
@@ -181,6 +185,8 @@ public class UserService : IUserService
         }
 
         await _usersCollection.ReplaceOneAsync(u => u.Id == uid, user);
+
+        var MapUser = _mapper.Map<GetUserDto>(user);
 
         response.Data = _mapper.Map<GetUserDto>(user);
 
@@ -204,5 +210,20 @@ public class UserService : IUserService
             passwordSalt = hmac.Key;
             passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
         }
+    }
+
+    private async Task<List<Friend>> FindFriends(List<string> ids)
+    {
+        List<Friend> friends = new List<Friend>() { };
+
+        foreach (var id in ids)
+        {
+            var user = await _usersCollection.Find(u => u.Id == id).FirstOrDefaultAsync();
+
+            if (user is not null)
+                friends.Add(_mapper.Map<Friend>(user));
+        }
+
+        return friends;
     }
 }
