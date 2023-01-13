@@ -2,13 +2,9 @@ import { CgSearch } from 'react-icons/cg';
 import { HiPlus } from 'react-icons/hi';
 import { createConversation } from '../../store/Conversation/ConversationActions';
 import { useConversation } from '../../store/Conversation/ConversationContext';
-import { addFriend } from '../../store/User/UserActions';
-import { useUser } from '../../store/User/UserContext';
 import { User } from '../../types';
 
 export default function ChatSearchUserList({ users }: { users: User[] }) {
-    const user = useUser();
-
     const conversation = useConversation();
 
     return (
@@ -31,7 +27,6 @@ export default function ChatSearchUserList({ users }: { users: User[] }) {
                         <button
                             className="ml-4 p-1 rounded-full transition cursor-pointer hover:bg-gray-100 disabled:bg-gray-100"
                             onClick={() => {
-                                addFriend(user.dispatch, id);
                                 createConversation(conversation.dispatch, id);
                             }}
                             disabled={false}

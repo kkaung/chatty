@@ -59,10 +59,11 @@ function reducer(state: State, action: Action) {
             };
 
         case 'CREATE_CONVERSATION_SUCCESS':
+            console.log(action.payload);
             return {
                 ...state,
                 creating: false,
-                conversations: [action.payload, ...state.conversations],
+                conversations: mapConversations(action.payload),
             };
 
         case 'UPDATE_CONVERSATIONS_SUCCESS':

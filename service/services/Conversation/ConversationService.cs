@@ -122,6 +122,7 @@ public class ConversationService : IConversationService
 
         var newMessage = new Message() { Text = createMessage.Text, SenderId = sid };
 
+        conversation.UpdatedAt = DateTime.Now;
         conversation.Messages.Add(newMessage);
 
         await _conversationsCollection.ReplaceOneAsync(c => c.Id == conversation.Id, conversation);
@@ -145,8 +146,7 @@ public class ConversationService : IConversationService
     {
         List<GetConversationDto> result = new List<GetConversationDto> { };
         var conversations = await _conversationsCollection
-            .Aggregate()
-            .Match(c => c.SenderOneId == uid || c.SenderTwoId == uid)
+            .Find(c => c.SenderOneId == uid || c.SenderTwoId == uid)
             .ToListAsync();
 
         foreach (var c in conversations)
@@ -158,7 +158,7 @@ public class ConversationService : IConversationService
             result.Add(mapConversation);
         }
 
-        return result;
+        return result.OrderByDescending(r => r.UpdatedAt).ToList();
     }
 
     private async Task<GetConversationDto> GetConversation(string cid)
