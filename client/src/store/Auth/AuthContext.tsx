@@ -22,9 +22,7 @@ type Action =
     | { type: 'LOGIN_PENDING' }
     | { type: 'LOGIN_SUCCESS' }
     | { type: 'LOGIN_FAILED'; payload: any }
-    | { type: 'LOGOUT_SUCCESS' }
-    | { type: 'GETME_PENDING' }
-    | { type: 'GETME_SUCCESS'; payload: any };
+    | { type: 'LOGOUT_SUCCESS' };
 
 export type Dispatch = (action: Action) => void;
 type State = {
@@ -79,12 +77,6 @@ function reducer(state: State, action: Action) {
         }
         case 'LOGOUT_SUCCESS': {
             return initialState;
-        }
-        case 'GETME_PENDING': {
-            return { ...state, isLoading: true };
-        }
-        case 'GETME_SUCCESS': {
-            return { ...state, isLoading: false, user: action.payload };
         }
     }
 }

@@ -1,6 +1,9 @@
 /* eslint-disable jsx-a11y/alt-text */
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useUser } from '../../store/User/UserContext';
+import { getMe } from '../../store/User/UserActions';
+import { joinConnection } from '../../utilities';
 
 type Props = {
     username?: string;
@@ -10,7 +13,14 @@ type Props = {
 export default function ChatProfileHead({ username, imageURL }: Props) {
     const {
         state: { isLoading },
+        dispatch,
     } = useUser();
+
+    useEffect(() => {
+        joinConnection();
+
+        getMe(dispatch);
+    }, []);
 
     return (
         <div className="bg-cyan-600 p-3 flex items-center justify-between rounded-tl-md">

@@ -4,14 +4,21 @@ namespace Chatty.Hubs
 {
     public class ChatHub : Hub
     {
-        public Task JoinConversation(string cid)
+        public async Task JoinConnection(string uid)
         {
-            return Groups.AddToGroupAsync(Context.ConnectionId, cid);
+            await Groups.AddToGroupAsync(Context.ConnectionId, uid);
         }
 
-        public Task LeaveConversation(string cid)
+        public async Task JoinConversation(string cid)
         {
-            return Groups.RemoveFromGroupAsync(Context.ConnectionId, cid);
+            await Groups.AddToGroupAsync(Context.ConnectionId, cid);
         }
+
+        public async Task LeaveConversation(string cid)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, cid);
+        }
+
+        public string GetConnectionId() => Context.ConnectionId;
     }
 }

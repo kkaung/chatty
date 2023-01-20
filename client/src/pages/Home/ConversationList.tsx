@@ -11,12 +11,17 @@ export default function ConversationList() {
         dispatch,
     } = useConversation();
 
+    console.log(conversations);
+
     useEffect(() => {
         if (conversations.length > 0) return;
         getConversations(dispatch);
     }, []);
 
     useEffect(() => {
+        connection.on('NewMessage', data => {
+            dispatch({ type: 'SET_NEW_MESSAGE', payload: data });
+        });
         connection.on('ReceiveMessage', data => {
             dispatch({ type: 'UPDATE_CONVERSATIONS_SUCCESS', payload: data });
         });

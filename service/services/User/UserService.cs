@@ -37,6 +37,8 @@ public class UserService : IUserService
     {
         var response = new ServiceResponse<List<GetUserDto>>();
 
+        Console.WriteLine(q);
+
         List<User> users;
 
         if (q != "")

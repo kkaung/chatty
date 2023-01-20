@@ -9,6 +9,7 @@ type Action =
           type: 'GETCONVERSATIONS_SUCCESS';
       }
     | { type: 'UPDATE_CONVERSATIONS_SUCCESS'; payload: any }
+    | { type: 'SET_NEW_MESSAGE'; payload: any }
     | { type: 'SET_CONVERSATION'; payload: any }
     | { type: 'CREATE_CONVERSATION_PENDING' }
     | { type: 'CREATE_CONVERSATION_SUCCESS'; payload: any }
@@ -59,14 +60,60 @@ function reducer(state: State, action: Action) {
             };
 
         case 'CREATE_CONVERSATION_SUCCESS':
-            console.log(action.payload);
             return {
                 ...state,
                 creating: false,
                 conversations: mapConversations(action.payload),
             };
 
+        case 'SET_NEW_MESSAGE': {
+            let conversations;
+
+            const conversationExists = state.conversations.find(
+                c => c.id === action.payload.id
+            );
+
+            if (!conversationExists) {
+                conversations = [
+                    mapConversation(action.payload),
+                    ...state.conversations,
+                ];
+            } else {
+                conversations = state.conversations.map(c => {
+                    if (c.id === action.payload.id) {
+                        const uid = getUserId();
+                        const messages = mapMessages(
+                            action.payload.messages,
+                            uid
+                        );
+                        return {
+                            ...c,
+                            messages,
+                        };
+                    }
+                    return c;
+                });
+            }
+
+            const conversation = conversations?.find(
+                c => c.id === state.conversation?.id
+            );
+
+            return {
+                ...state,
+                conversation,
+                conversations,
+            };
+        }
+
         case 'UPDATE_CONVERSATIONS_SUCCESS':
+            if (state.conversations.length === 0) {
+                return {
+                    ...state,
+                    isLoading: false,
+                };
+            }
+
             const conversations = state.conversations.map(c => {
                 if (c.id === action.payload.id) {
                     const uid = getUserId();
@@ -80,7 +127,7 @@ function reducer(state: State, action: Action) {
             });
 
             const conversation = conversations.find(
-                c => c.id === state.conversation!.id
+                c => c.id === state.conversation?.id
             );
 
             return {
@@ -107,6 +154,29 @@ function reducer(state: State, action: Action) {
         case 'RESET':
             return initialState;
     }
+}
+
+function mapConversation(conversation: any) {
+    const uid = getUserId();
+
+    const c = conversation;
+    const messages = mapMessages(c.messages, uid);
+
+    const sender =
+        (c.senderOne.id === uid && c.senderOne) ||
+        (c.senderTwo.id === uid && c.senderTwo);
+    const receiver =
+        (c.senderOne.id !== uid && c.senderOne) ||
+        (c.senderTwo !== uid && c.senderTwo);
+
+    return {
+        id: c.id,
+        createdAt: c.createdAt,
+        updatedAt: c.updatedAt,
+        messages,
+        sender,
+        receiver,
+    };
 }
 
 function mapConversations(conversations: Conversation[]) {

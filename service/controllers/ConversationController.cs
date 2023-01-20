@@ -18,9 +18,9 @@ public class ConversationsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<
-        ActionResult<ServiceResponse<List<GetConversationDto>>>
-    > GetUserConversations()
+    public async Task<ActionResult<ServiceResponse<List<GetConversationDto>>>> GetUserConversations(
+        [FromServices] IHubContext<ChatHub> chatHubContext
+    )
     {
         var response = await _service.GetUserConversations();
 
@@ -31,11 +31,17 @@ public class ConversationsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<ServiceResponse<GetConversationDto>>> CreateUserConversation(
-        CreateConversationDto createConversation
+    public async Task<
+        ActionResult<ServiceResponse<List<GetConversationDto>>>
+    > CreateUserConversation(
+        CreateConversationDto createConversation,
+        [FromServices] IHubContext<ChatHub> chatHubContext
     )
     {
         var response = await _service.CreateUserConversation(createConversation);
+
+        if (!response.Success)
+            return BadRequest(response);
 
         return Ok(response);
     }
@@ -49,11 +55,23 @@ public class ConversationsController : ControllerBase
     {
         var response = await _service.CreateMessage(cid, createMessage);
 
-
         if (!response.Success)
             return BadRequest(response);
 
-        Console.WriteLine("Reach");
+        var isNewMessage = response.Data!.Messages.Count == 1;
+
+        if (isNewMessage is true)
+        {
+            await chatHubContext.Clients
+                .Groups(response.Data.SenderOne!.Id!)
+                .SendAsync("NewMessage", response.Data);
+            await chatHubContext.Clients
+                .Groups(response.Data.SenderTwo!.Id!)
+                .SendAsync("NewMessage", response.Data);
+
+            return Ok();
+        }
+
         await chatHubContext.Clients.Group(cid).SendAsync("ReceiveMessage", response.Data);
 
         return Ok();

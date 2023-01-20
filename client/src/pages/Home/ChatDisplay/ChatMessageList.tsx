@@ -41,7 +41,7 @@ export default function ChatMessageList({ conversation }: Props) {
                         ) : (
                             <div className="flex justify-end">
                                 <div>
-                                    <div className="flex space-x-2">
+                                    <div className="flex space-x-2 justify-end">
                                         <div className="bg-sky-400 inline py-2 px-3 text-sm rounded-l rounded-b shadow-sm text-white">
                                             {text}
                                         </div>

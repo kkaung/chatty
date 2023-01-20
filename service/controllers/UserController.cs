@@ -18,7 +18,7 @@ public class UserController : ControllerBase
     [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<ServiceResponse<List<GetUserDto>>>> GetUsers(
-        [FromQuery] string q
+        [FromQuery] string q = ""
     )
     {
         var response = await _service.GetUsers(q);

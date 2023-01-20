@@ -47,26 +47,26 @@ public class ConversationService : IConversationService
     }
 
     public async Task<ServiceResponse<List<GetConversationDto>>> CreateUserConversation(
-        CreateConversationDto createConversation
+        CreateConversationDto body
     )
     {
         var response = new ServiceResponse<List<GetConversationDto>>();
 
         var uid = GetUserId();
 
-        if (uid == createConversation.fid)
+        if (uid == body.fid)
         {
             response.Success = false;
             return response;
         }
 
-        var conversationExists = await _conversationsCollection
-            .Find(
-                c =>
-                    c.SenderOneId == createConversation.fid
-                    || c.SenderTwoId == createConversation.fid
-            )
-            .FirstOrDefaultAsync();
+        var userConversations = await _conversationsCollection
+            .Find(c => c.SenderOneId == uid || c.SenderTwoId == uid)
+            .ToListAsync();
+
+        var conversationExists = userConversations.FirstOrDefault(
+            c => c.SenderOneId == body.fid || c.SenderTwoId == body.fid
+        );
 
         if (conversationExists is not null)
         {
@@ -75,7 +75,7 @@ public class ConversationService : IConversationService
             return response;
         }
 
-        var friend = await FindUserById(createConversation.fid!);
+        var friend = await FindUserById(body.fid!);
         var user = await FindUserById(uid);
 
         if (friend is null)
@@ -129,6 +129,9 @@ public class ConversationService : IConversationService
 
         response.Data = _mapper.Map<GetConversationDto>(conversation);
 
+        response.Data.SenderOne = _mapper.Map<Friend>(await FindUserById(conversation.SenderOneId));
+        response.Data.SenderTwo = _mapper.Map<Friend>(await FindUserById(conversation.SenderTwoId));
+
         return response;
     }
 
@@ -175,10 +178,5 @@ public class ConversationService : IConversationService
         );
 
         return mapConversation;
-    }
-
-    private async Task<Message> FindMessageById(string id)
-    {
-        return await _messagesCollection.Find(m => m.Id == id).FirstOrDefaultAsync();
     }
 }

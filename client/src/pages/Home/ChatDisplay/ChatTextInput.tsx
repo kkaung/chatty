@@ -1,12 +1,6 @@
 import { useEffect, useState } from 'react';
 import { sendMessage } from '../../../store/Conversation/ConversationActions';
-import {
-    api,
-    getAxiosConfig,
-    getToken,
-    joinConversation,
-    leaveConversation,
-} from '../../../utilities';
+import { api, getAxiosConfig, getToken } from '../../../utilities';
 import ReplySuggestion from './ReplySuggestion';
 import { BsFillChatRightTextFill } from 'react-icons/bs';
 import TextSearchSpinner from '../../../components/loaders/TextSearchSpinner';
@@ -33,12 +27,6 @@ export default function ChatTextInput({ cid }: Props) {
 
     useEffect(() => {
         if (!cid) return;
-
-        joinConversation(cid);
-
-        return () => {
-            leaveConversation(cid);
-        };
     }, [cid]);
 
     const handleReplySuggestion = async () => {

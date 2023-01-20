@@ -37,11 +37,14 @@ builder.Services
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
-        "AllowAll",
+        "AllowSpecificOrigin",
         builder =>
         {
             builder
-                .WithOrigins("http://localhost:3000", "http://0.0.0.0:3000", "https://chatty-pi.vercel.app")
+                .WithOrigins(
+                    "http://localhost:3000",
+                    "https://chatty-pi.vercel.app"
+                )
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();
@@ -56,10 +59,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowAll");
+app.UseCors("AllowSpecificOrigin");
 app.UseAuthentication();
 app.UseAuthorization();
-
 
 app.UseHttpsRedirection();
 

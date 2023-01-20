@@ -27,7 +27,6 @@ export default function ProfilePicture({ imageURL }: Props) {
     } = useUser();
 
     useEffect(() => {
-        console.log(uploadProgress);
         if (!uploadProgress) return;
 
         if (uploadProgress === 100) setUploadProgress(0);
@@ -142,7 +141,7 @@ export default function ProfilePicture({ imageURL }: Props) {
 
 function ProgressModal({ percent }: { percent: number }) {
     return (
-        <div className="fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black/50 text-white">
+        <div className="fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black/50 text-white z-10">
             <div className="w-[80px] h-[80px]">
                 <Circle
                     percent={percent}
