@@ -1,10 +1,12 @@
 using Chatty.Hubs;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Chatty.Controllers;
 
+[EnableCors("AllowSpecificOrigin")]
 [Authorize]
 [ApiController]
 [Route("api/conversations")]

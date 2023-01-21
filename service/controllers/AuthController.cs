@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chatty.Controllers;
 
+[EnableCors("AllowSpecificOrigin")]
 [Authorize]
 [ApiController]
 [Route("public")]

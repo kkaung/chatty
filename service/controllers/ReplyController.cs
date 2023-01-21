@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using OpenAI.GPT3.Managers;
 using OpenAI.GPT3;
 using OpenAI.GPT3.ObjectModels.RequestModels;
+using Microsoft.AspNetCore.Cors;
 
 namespace Chatty.Controllers;
 
+[EnableCors("AllowSpecificOrigin")]
 [Authorize]
 [ApiController]
 [Route("api/reply")]
