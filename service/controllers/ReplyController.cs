@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Cors;
 
 namespace Chatty.Controllers;
 
-[EnableCors("AllowSpecificOrigin")]
+
 [Authorize]
 [ApiController]
 [Route("api/reply")]
