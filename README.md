@@ -19,7 +19,7 @@ Website: https://chatty-pi.vercel.app
 
 - Home Page with Chat 
   
-![Home Search](docs/images/chat.jpeg)
+![Home Search](docs/images/_chat.jpeg)
 
 - Api Endpoints
   
